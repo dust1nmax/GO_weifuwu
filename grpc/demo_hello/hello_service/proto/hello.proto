@@ -1,0 +1,25 @@
+// 使用 proto3 语法定义 gRPC 服务
+syntax = "proto3";
+
+// 包名，生成的 Go 代码中的标识符前缀，避免命名冲突
+package proto;
+
+// 生成 Go 代码时的 import 路径与包名
+option go_package = "hello_service/proto";
+
+// 定义 gRPC 服务，protoc 会为其生成服务端接口和客户端桩代码
+service Greeter {
+    // SayHello 方法：接收 HelloRequest，返回 HelloResponse
+    rpc SayHello (HelloRequest) returns (HelloResponse);
+}
+
+// 请求消息：客户端传给服务端的参数
+message HelloRequest {
+    // 字段名，后面的 1 是字段编号（序列化时的唯一标识，不是默认值）
+    string name = 1;
+}
+
+// 响应消息：服务端返回给客户端的结果
+message HelloResponse {
+    string reply = 1;
+}
