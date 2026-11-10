@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"net"
-	"net/http"
 	"net/rpc"
 )
 
@@ -18,13 +17,18 @@ func (s *ServiceA) Add(args *Args, reply *int) error {
 	return nil
 }
 
-func main(){
+func main() {
 	service := new(ServiceA)
 	rpc.Register(service)
-	rpc.HandleHTTP()
+	// rpc.HandleHTTP()
 	l, err := net.Listen("tcp", ":9091")
 	if err != nil {
 		log.Fatal("Listen Fatal", err)
 	}
-	http.Serve(l, nil)
+	// http.Serve(l, nil)
+	// 基于TCP 处理服务
+	for {
+		conn, _:=l.Accept()
+		rpc.ServeConn(conn)
+	}
 }
