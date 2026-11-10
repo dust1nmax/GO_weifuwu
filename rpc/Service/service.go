@@ -30,7 +30,7 @@ func main() {
 	// 基于TCP 处理服务
 	for {
 		conn, _:=l.Accept()
-		rpc.ServeConn(conn)
+		//rpc.ServeConn(conn)
 
 		// 使用json协议
 		rpc.ServeCodec(jsonrpc.NewServerCodec(conn))
