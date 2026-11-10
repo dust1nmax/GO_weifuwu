@@ -4,6 +4,7 @@ import (
 	"log"
 	"net"
 	"net/rpc"
+	"net/rpc/jsonrpc"
 )
 
 type Args struct {
@@ -30,5 +31,8 @@ func main() {
 	for {
 		conn, _:=l.Accept()
 		rpc.ServeConn(conn)
+
+		// 使用json协议
+		rpc.ServeCodec(jsonrpc.NewServerCodec(conn))
 	}
 }

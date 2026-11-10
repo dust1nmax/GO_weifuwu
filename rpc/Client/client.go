@@ -5,7 +5,9 @@ package main
 import (
 	"fmt"
 	"log"
+	"net"
 	"net/rpc"
+	"net/rpc/jsonrpc"
 )
 
 type Args struct {
@@ -15,7 +17,12 @@ type Args struct {
 func main() {
 	// 建立HTTP连接
 	// client, err := rpc.DialHTTP("tcp", "127.0.0.1:9091")
-	client, err := rpc.Dial("tcp", "127.0.0.1:9091")
+	// client, err := rpc.Dial("tcp", "127.0.0.1:9091")
+
+	// 使用json协议
+	conn, err := net.Dial("tcp", "127.0.0.1:9091")
+	client := rpc.NewClientWithCodec(jsonrpc.NewClientCodec(conn))
+	
 	if err != nil {
 		log.Fatal("dialing:", err)
 	}
