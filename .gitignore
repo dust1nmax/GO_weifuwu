@@ -1,1 +1,7 @@
 .qoder/
+
+# Go 编译产物：在各 module 目录下执行 go build 会生成与 module 同名的可执行文件
+grpc/demo_hello/hello_client/hello_client
+grpc/demo_hello/hello_service/hello_service
+grpc/test_add/client/client
+grpc/test_add/server/server
