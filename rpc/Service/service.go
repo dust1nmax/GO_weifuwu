@@ -29,7 +29,7 @@ func main() {
 	// http.Serve(l, nil)
 	// 基于TCP 处理服务
 	for {
-		conn, _:=l.Accept()
+		conn, _ := l.Accept()
 		//rpc.ServeConn(conn)
 
 		// 使用json协议

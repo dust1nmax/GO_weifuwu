@@ -21,11 +21,12 @@ func main() {
 
 	// 使用json协议
 	conn, err := net.Dial("tcp", "127.0.0.1:9091")
-	client := rpc.NewClientWithCodec(jsonrpc.NewClientCodec(conn))
-	
+	// 必须先判 err 再用 conn：连接失败时 conn 为 nil，
+	// 直接传给 NewClientCodec 会先崩在这里，下面的 log.Fatal 根本走不到
 	if err != nil {
 		log.Fatal("dialing:", err)
 	}
+	client := rpc.NewClientWithCodec(jsonrpc.NewClientCodec(conn))
 
 	// 同步调用
 	args := &Args{10, 20}
