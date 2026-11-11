@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"hello_client/proto"
 	"log"
 	"time"
@@ -11,7 +12,18 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
+// name 指向命令行参数 -name 的存储地址。
+// flag.String 返回的是 *string 而不是 string：参数值要等 flag.Parse() 执行后才写入，
+// 所以这里只能先拿到指针，读取时必须解引用（*name）。
+// 三个参数依次是：flag 名、默认值（不传 -name 时使用）、-h 输出里的说明文字。
+// 放在包级变量是因为 flag.String 会在 init 阶段完成注册，早于 main 执行。
+var name = flag.String("name", "max", "通过 -name 告诉你是谁")
+
 func main() {
+	// 解析 os.Args，把命令行上的 -name=xxx 写进上面注册的指针。
+	// 必须在读取任何 flag 之前调用，否则拿到的永远是默认值。
+	// 遇到 -h/--help 会自动打印用法并退出；遇到未定义的 flag 会报错退出。
+	flag.Parse()
 	// 创建 gRPC 客户端连接。
 	// grpc.NewClient 是懒连接：这里只建立 ClientConn 对象，真正的首次 RPC 调用时才会去拨号。
 	// 第二个参数指定传输凭证，insecure 表示明文传输（不走 TLS）。
@@ -32,9 +44,10 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	// 构造请求参数并发起一元（unary）RPC，阻塞等待服务端返回
-	name := "max"
-	response, err := c.SayHello(ctx, &proto.HelloRequest{Name: name})
+	// 构造请求参数并发起一元（unary）RPC，阻塞等待服务端返回。
+	// *name 是对 flag 指针解引用，取出解析后的字符串值；
+	// HelloRequest 的 Name 字段是 string，所以这里不能直接传 name。
+	response, err := c.SayHello(ctx, &proto.HelloRequest{Name: *name})
 	if err != nil {
 		// 这里用 Printf 而不是 Fatalf：连接已经建立，调用失败不算致命错误，正常退出即可
 		log.Printf("c.SayHello failed, err:%v\n", err)
